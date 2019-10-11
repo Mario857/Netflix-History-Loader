@@ -1,14 +1,37 @@
 <!doctype html>
-<html style="min-height:auto" >
-    <head>
-        <title>chrome-extension-template</title>
-        <script src="popup.js"></script>
-    </head>
-    <body>
-    </body>
-    <body>
-        <div>
-            <p>Edit this template!</p>
+<html style="min-height:auto">
+
+<head>
+    <title>Netflix History Loader</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+</head>
+
+<body class="mainContainer">
+    <div class="container">
+        <div class="buttonContainer">
+            <div class="title">Netflix Loader</div>
         </div>
-    </body>
+        <div class="buttonContainer">
+            <button class="primaryButton" id="expandButton">
+                Show Viewing History
+            </button>
+        </div>
+        <div class="buttonContainer">
+            <button class="primaryButton" id="saveHistoryButton">
+                Save History
+            </button>
+        </div>
+        <div class="buttonContainer">
+            <button class="primaryButton" id="openHistoryFileButton">
+                Load History
+            </button>
+        </div>
+        <div class="buttonContainer">
+            <button class="primaryButton" id="loadHistoryFileButton">
+                Remove History
+            </button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
 </html>

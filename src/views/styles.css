@@ -1,0 +1,52 @@
+.mainContainer {
+  padding: 12px;
+}
+.container {
+  display: flex; 
+  flex-direction: column; 
+  height: 240px; 
+  width: 140px;
+}
+
+.buttonContainer {
+  display: flex;
+   flex: 1; 
+   padding: 8px 0px;
+}
+
+.primaryButton {
+  flex: 1;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background:linear-gradient(to bottom,  #e50914,#680409 5%, 100%);
+	background-color:#e50914;
+	border-radius:6px;
+	border:1px solid #680409;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:12px;
+	font-weight:bold;
+	padding:8px 0px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #e50914;
+}
+.primaryButton:hover {
+	background:linear-gradient(to bottom, #e50914,#680409 100%);
+	background-color:#680409;
+}
+.primaryButton:focus {
+  outline: 0;
+}
+.primaryButton:active {
+	position:relative;
+	top:1px;
+}
+
+.title {
+  color: #e50914;
+  font-size: 20px;
+  font-family:Arial;
+  font-weight:bold;
+  align-self: center;
+}
