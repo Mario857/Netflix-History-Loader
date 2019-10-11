@@ -29,8 +29,11 @@ chrome.extension.onConnect.addListener(popupPort => {
 });
 
 // Response handler for short lived messages
-const handleBackgroundResponse = response =>
-    console.log('in-content.js - Received response:', response);
+const handleBackgroundResponse = response => { 
+    const { url } = response;
+    
+    return console.log(url)
+}
 
 // Send a message to background.js
 chrome.runtime.sendMessage('Message from in-content.js!', handleBackgroundResponse);

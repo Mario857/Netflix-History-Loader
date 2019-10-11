@@ -14,10 +14,7 @@ const sampleBackgroundGlobal = {
 
 // Listen to short lived messages from in-content.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Perform any ther actions depending on the message
-    console.log('background.js - received message from in-content.js:', message);
-    // Respond message
-    sendResponse('👍');
+    sendResponse(sender);
 });
 
 // Make variables accessible from chrome.extension.getBackgroundPage()

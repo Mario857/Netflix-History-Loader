@@ -9,6 +9,52 @@
  *
  */
 
+
+console = chrome.extension.getBackgroundPage().console;
+const expandButton = document.getElementById('expandButton');
+const saveHistoryButton = document.getElementById('saveHistoryButton');
+const openHistoryFileButton = document.getElementById('openHistoryFileButton');
+const loadHistoryFileButton = document.getElementById('loadHistoryFileButton');
+
+
+//const expand = document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click();
+
+function scrapHistoryLinks(document) {
+
+}
+
+function log(...args) {
+    chrome.tabs.executeScript({ code: `console.log(${args})` });
+};
+
+
+const getHistoryLinksScript = `(function getUrls(){
+    const urls = Array.from({ length: document.getElementsByClassName("col title").length }).map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
+    return { urls };
+  })()`;
+
+expandButton.onclick = function (element) {
+    chrome.tabs.executeScript({ code: `setInterval(() => document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click(), 200)` })
+};
+
+saveHistoryButton.onclick = function (element) {
+    chrome.tabs.executeScript({
+        code: `(function getUrls(){
+        const urls = Array.from({ length: document.getElementsByClassName("col title").length }).map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
+        return { urls };
+      })()` }, function (result) {
+        console.log(result[0].urls.map(x => `https://www.netflix.com${x}`));
+    });
+}
+
+openHistoryFileButton.onclick = function (element) {
+    console.log('HistoryFile');
+}
+
+loadHistoryFileButton.onclick = function (element) {
+    console.log('History');
+}
+
 // Start the popup script, this could be anything from a simple script to a webapp
 const initPopupScript = () => {
     // Access the background window object
