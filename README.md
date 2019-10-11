@@ -5,13 +5,13 @@
 To run a development server that will watch for file changes and rebuild the scripts, run:
 
 ```
-yarn start
+npm start
 ```
 
 To just build the files without the development server:
 
 ```
-yarn build
+npm build
 ```
 
 Both commands will create a `dist/` directory, it will contain the built files that should be loaded into the browser or packed.
