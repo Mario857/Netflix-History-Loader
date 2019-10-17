@@ -28,8 +28,6 @@ function log(...args) {
 };
 
 
-let tempArr = [];
-
 const setTempStorage = (value) => {
     chrome.tabs.executeScript({ code: `localStorage.setItem('temp1', '${value}')` });
 }
