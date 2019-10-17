@@ -28,6 +28,22 @@ function log(...args) {
 };
 
 
+let tempArr = [];
+
+const setTempStorage = (value) => {
+    chrome.tabs.executeScript({ code: `localStorage.setItem('temp1', '${value}')` });
+}
+
+const getTempStorage = () => {
+    chrome.tabs.executeScript({
+        code: `(function getTemp(){
+        const temp1 = localStorage.getItem('temp1');
+        return { temp1 };
+      })()` }, function (result) {
+        return JSON.parse(result[0].temp1);
+    });
+}
+
 const getHistoryLinksScript = `(function getUrls(){
     const urls = Array.from({ length: document.getElementsByClassName("col title").length }).map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
     return { urls };
@@ -43,16 +59,30 @@ saveHistoryButton.onclick = function (element) {
         const urls = Array.from({ length: document.getElementsByClassName("col title").length }).map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
         return { urls };
       })()` }, function (result) {
-        console.log(result[0].urls.map(x => `https://www.netflix.com${x}`));
+        const urlLinks = result[0].urls.map(x => `https://www.netflix.com${x.replace('/title/', '/watch/')}`).reverse();
+        setTempStorage(JSON.stringify(urlLinks));
     });
+
 }
 
 openHistoryFileButton.onclick = function (element) {
-    console.log('HistoryFile');
+
+    chrome.tabs.executeScript({
+        code: `(function getTemp(){
+        const temp1 = localStorage.getItem('temp1');
+        return { temp1 };
+      })()` }, function (result) {
+        JSON.parse(result[0].temp1).forEach((x, i) => {
+            setTimeout(() => {
+                chrome.tabs.executeScript({ code: `window.location.replace('${x}');` })
+            }, 4000 * i)
+        })
+    });
 }
 
+
 loadHistoryFileButton.onclick = function (element) {
-    console.log('History');
+
 }
 
 // Start the popup script, this could be anything from a simple script to a webapp
@@ -98,3 +128,8 @@ const initPopupScript = () => {
 
 // Fire scripts after page has loaded
 document.addEventListener('DOMContentLoaded', initPopupScript);
+
+
+
+
+  
