@@ -13,32 +13,19 @@
 console = chrome.extension.getBackgroundPage().console;
 const expandButton = document.getElementById('expandButton');
 const saveHistoryButton = document.getElementById('saveHistoryButton');
-const openHistoryFileButton = document.getElementById('openHistoryFileButton');
 const loadHistoryFileButton = document.getElementById('loadHistoryFileButton');
 
-
-//const expand = document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click();
-
-function scrapHistoryLinks(document) {
-
+const setTempStorage = ({ key, value }) => {
+    chrome.tabs.executeScript({ code: `localStorage.setItem('${key}', '${value}')` });
 }
 
-function log(...args) {
-    chrome.tabs.executeScript({ code: `console.log(${args})` });
-};
-
-
-const setTempStorage = (value) => {
-    chrome.tabs.executeScript({ code: `localStorage.setItem('temp1', '${value}')` });
-}
-
-const getTempStorage = () => {
+const getTempStorage = ({ key, callback }) => {
     chrome.tabs.executeScript({
         code: `(function getTemp(){
-        const temp1 = localStorage.getItem('temp1');
-        return { temp1 };
+        const temp = localStorage.getItem('${key}');
+        return { temp };
       })()` }, function (result) {
-        return JSON.parse(result[0].temp1);
+        callback(JSON.parse(result[0].temp));
     });
 }
 
@@ -54,34 +41,28 @@ expandButton.onclick = function (element) {
 saveHistoryButton.onclick = function (element) {
     chrome.tabs.executeScript({
         code: `(function getUrls(){
-        const urls = Array.from({ length: document.getElementsByClassName("col title").length }).map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
+        const urls = Array.from({ length: document.getElementsByClassName("col title").length })
+        .map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
         return { urls };
       })()` }, function (result) {
         const urlLinks = result[0].urls.map(x => `https://www.netflix.com${x.replace('/title/', '/watch/')}`).reverse();
-        setTempStorage(JSON.stringify(urlLinks));
-    });
-
-}
-
-openHistoryFileButton.onclick = function (element) {
-
-    chrome.tabs.executeScript({
-        code: `(function getTemp(){
-        const temp1 = localStorage.getItem('temp1');
-        return { temp1 };
-      })()` }, function (result) {
-        JSON.parse(result[0].temp1).forEach((x, i) => {
-            setTimeout(() => {
-                chrome.tabs.executeScript({ code: `window.location.replace('${x}');` })
-            }, 4000 * i)
-        })
+        setTempStorage({ key: 'history', value: JSON.stringify(urlLinks) });
     });
 }
-
 
 loadHistoryFileButton.onclick = function (element) {
 
+    getTempStorage({
+        key: 'history', callback: (history) => {
+            history.forEach((x, i) => {
+                setTimeout(() => {
+                    chrome.tabs.executeScript({ code: `window.location.replace('${x}');` })
+                }, 4000 * i)
+            })
+        }
+    })
 }
+
 
 // Start the popup script, this could be anything from a simple script to a webapp
 const initPopupScript = () => {
@@ -130,4 +111,3 @@ document.addEventListener('DOMContentLoaded', initPopupScript);
 
 
 
-  
