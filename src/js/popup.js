@@ -34,32 +34,15 @@ const getHistoryLinksScript = `(function getUrls(){
   })()`;
 
 
-const expandViewingHistory = ({ onDone }) => {
+saveHistoryButton.onclick = function (element) {
     chrome.tabs.executeScript({
         code: `(function expand(){
     
         document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click();
-        let done = document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].disabled;
 
-        if(done) {
-            return { done };
-        }
-
-        setTimeout(() => {
-            expand();
-        }, 200);
-        
-        return { done };
+        return { done: document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].disabled };
       })()`}, function (result) {
         if (result[0].done) {
-            onDone();
-        }
-    });
-}
-
-saveHistoryButton.onclick = function (element) {
-    expandViewingHistory({
-        onDone: () => {
             chrome.tabs.executeScript({
                 code: `(function getUrls(){
                             const urls = Array.from({ length: document.getElementsByClassName("col title").length })
@@ -70,8 +53,10 @@ saveHistoryButton.onclick = function (element) {
                 const urlLinks = result[0].urls.map(x => `https://www.netflix.com${x.replace('/title/', '/watch/')}`).reverse();
                 setTempStorage({ key: 'history', value: JSON.stringify(urlLinks) });
             });
+        } else {
+            setTimeout(saveHistoryButton.onclick(), 100);
         }
-    })
+    });
 }
 
 loadHistoryFileButton.onclick = function (element) {
