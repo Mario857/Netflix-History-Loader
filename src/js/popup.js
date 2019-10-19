@@ -11,7 +11,6 @@
 
 
 console = chrome.extension.getBackgroundPage().console;
-const expandButton = document.getElementById('expandButton');
 const saveHistoryButton = document.getElementById('saveHistoryButton');
 const loadHistoryFileButton = document.getElementById('loadHistoryFileButton');
 
@@ -34,20 +33,45 @@ const getHistoryLinksScript = `(function getUrls(){
     return { urls };
   })()`;
 
-expandButton.onclick = function (element) {
-    chrome.tabs.executeScript({ code: `setInterval(() => document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click(), 200)` })
-};
+
+const expandViewingHistory = ({ onDone }) => {
+    chrome.tabs.executeScript({
+        code: `(function expand(){
+    
+        document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].click();
+        let done = document.getElementsByClassName("btn-bar top-padding btn-bar-left")[0].children[0].disabled;
+
+        if(done) {
+            return { done };
+        }
+
+        setTimeout(() => {
+            expand();
+        }, 200);
+        
+        return { done };
+      })()`}, function (result) {
+        if (result[0].done) {
+            onDone();
+        }
+    });
+}
 
 saveHistoryButton.onclick = function (element) {
-    chrome.tabs.executeScript({
-        code: `(function getUrls(){
-        const urls = Array.from({ length: document.getElementsByClassName("col title").length })
-        .map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
-        return { urls };
-      })()` }, function (result) {
-        const urlLinks = result[0].urls.map(x => `https://www.netflix.com${x.replace('/title/', '/watch/')}`).reverse();
-        setTempStorage({ key: 'history', value: JSON.stringify(urlLinks) });
-    });
+    expandViewingHistory({
+        onDone: () => {
+            chrome.tabs.executeScript({
+                code: `(function getUrls(){
+                            const urls = Array.from({ length: document.getElementsByClassName("col title").length })
+                            .map((_, i) => document.getElementsByClassName("col title")[i].children[0].getAttribute('href'))
+                            return { urls };
+                            })()
+          `}, function (result) {
+                const urlLinks = result[0].urls.map(x => `https://www.netflix.com${x.replace('/title/', '/watch/')}`).reverse();
+                setTempStorage({ key: 'history', value: JSON.stringify(urlLinks) });
+            });
+        }
+    })
 }
 
 loadHistoryFileButton.onclick = function (element) {
